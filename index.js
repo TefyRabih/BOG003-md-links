@@ -1,22 +1,20 @@
 #!/usr/bin/env node
-/* const md = require ('./md.js');
+ const mdLinks = require('./md.js');
+ const axios = require("axios");
+ 
+ // Variable route que contiene el argumento pasado en la consola 
+ const route = process.argv[2];
+ const optionsOne = process.argv[3];
+ const optionsTwo = process.argv[4];
+ 
+ 
+ // Comprobar si recibe como option --validate 
+ let isValidate = (optionsOne === '--validate') ? true : false;
+ let isStats = (optionsTwo === '--stats') ? true : false;
 
-// Función mdLinks
 
-const mdLinks = (path) => new Promise((resolve, reject) => {
-  // Primero verificamos si el path existe
- if (md.existRoute(path) === true) {
-    // resolve('Esta ruta si existe');
-    // Segundo se verifica si es absoluta - convertirla
-    const pathAbsolute = md.validateRoute(path);
- }
+// md-links ./readme2.md --validate 
+mdLinks(route, {validate: isValidate, stats: isStats})
+.then(console.log)
+.catch(console.log) 
 
-    // const absolutePath = pathToAbsolute(path); 
-
-    // se verifica si es archivo
-    //if (index.validateFile(pathAbsolute) === true) { }
-
-  });
-module.exports =
-  mdLinks ()
-  */

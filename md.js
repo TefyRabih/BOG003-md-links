@@ -1,49 +1,95 @@
-/* libreria de node.js que permite interactuar con el sistema de archivos (file system) */
-const fs = require ('fs');
-const fsp = require("fs").promises;
+// libreria de node.js que permite interactuar con el sistema de archivos (file system)
+const fs = require('fs');
 const path = require('path');
-const modulPath = require('path');
+const marked = require('marked');
+const FileHound = require('filehound');
 
-/* Variable route contiene la ruta */
+// Variable route contiene la ruta 
 let route = process.argv[2];
-route = path.normalize(route);
+route = path.normalize(route)
 console.log('Esta es mi ruta ', route);
 // validar ruta absoluta o si no convertirla -- path.resolve()devolverá la ruta absoluta del directorio de trabajo actual.
-const validateRoute = (filePath) => path.resolve(filePath); 
-console.log('Convertir en absoluta ',validateRoute (route));
+const validateRoute = path.resolve(route);
+console.log('Convertir en absoluta ', validateRoute);
 // console.log('Es relativa', validateRoute(path))
-// ext md
-let fileMd = (path) => modulPath.extname(path) === '.md' ? true : false;
 
-// 
-
-// validar si es un directorio
-const isDirectory = (path) => new Promise ((resolve, reject) =>  {
-  fs.stat(path, (error,stats)=> {
-    if (error) {
-    reject('No se puede leer el directorio');
-  } 
-  console.log('¿Es Directorio?', stats.isDirectory())
-    resolve(stats.isDirectory());
-    if (stats.isDirectory() === true) {
-      console.log('soy directorio');
-    } else if (stats.isDirectory() === false) {
-      console.log('es archivo md', fileMd(route)) 
+const mdLinks = (path, options) => isDirectory(path)
+  .then((res) => {
+    if (res === true) {
+      return readDir(path);
+    } else {
+      return [path];
     }
-      
-  });
+  })
+  .then((arrayList) => {
+    console.log('archivo', fileMd(arrayList));
+    return fileMd(arrayList);
+  })
+  .then(readfiles)
+  .then((nestedObjects) => nestedObjects.flatMap((nestedObject) => nestedObject))
+  .then((linkObjects)=>{
+    if(options.validate){
+      return 'Option validate';
+    }
+  })
+
+
+// rutas de los archivos del directorio
+const readDir = (path) => FileHound.create().paths(path).find();
+
+
+// validar si es un archivo ext md y crea un nuevo arreglo archivos md
+let fileMd = (pathList) => pathList.filter(file => path.extname(file) === '.md');
+
+// recibe una ruta y retorna una promesa 
+const isDirectory = (path) => new Promise((resolve, reject) => {
+  fs.stat(path, (error, stats) => {
+    if (error) {
+      reject('No se puede leer el directorio');
+    } else {
+      resolve(stats.isDirectory());
+    }
+  })
 });
-isDirectory(route);
 
-// leer contenido del archivo
-const readingFile = (route) => { 
-    fsp.readFile(route, 'utf-8')
-    .then(function (result) {
-      console.log("se lee el archivo " + result);
-    })
-    .catch(function (error) {
-      console.log(error);
-    })
-}    
+// leer el archivo con extensión .md
+const readFile = (path) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, 'utf-8', (err, data) => {
+      if (err) {
+        reject(err)
+      }
+      resolve(getLinks(data, path));
 
-// node md.js 'C:\Users\ESTEF\Documents\Laboratoria\BOG003-md-links\md.js'
+    })
+  })
+}
+
+// Leer archivos de directorio
+const readfiles = (routesMd) => {
+  return Promise.all(routesMd.map(readFile));
+}
+
+// usando marked extrayendo propiedades (href, texto, file) 
+
+const getLinks = (textfile, file) => {
+  console.log('mio', file);
+  let arrayLink = [];
+  const renderer = new marked.Renderer();
+  renderer.link = (href, _title, text) => {
+    arrayLink.push({
+      href: href,
+      text: text,
+      file: file,
+    });
+  }
+  marked(textfile, { renderer: renderer });
+  return arrayLink;
+}
+
+// Se recibe como option --Validate
+
+
+// md.js 'C:\Users\ESTEF\Documents\Laboratoria\BOG003-md-links\md.js'
+
+module.exports = mdLinks

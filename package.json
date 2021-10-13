@@ -1,7 +1,7 @@
 {
-  "name": "md-links",
+  "name": "@tefyrabih/md-links",
   "version": "0.1.0",
-  "description": "Herramienta que analiza archivos en formato markdown, permite verificar link encontrados e informar links dañados o rotos ademas permite realizar algunas estadisticas" ,
+  "description": "Herramienta que analiza archivos en formato markdown, permite verificar link encontrados e informar links dañados o rotos ademas permite realizar algunas estadisticas",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -20,5 +20,10 @@
   },
   "bin": {
     "md-links": "index.js"
+  },
+  "dependencies": {
+    "axios": "^0.22.0",
+    "filehound": "^1.17.5",
+    "marked": "^0.3.14"
   }
 }
