@@ -3,14 +3,15 @@ const fs = require('fs');
 const path = require('path');
 const marked = require('marked');
 const FileHound = require('filehound');
+const axios = require('axios');
 
 // Variable route contiene la ruta 
 let route = process.argv[2];
 route = path.normalize(route)
-console.log('Esta es mi ruta ', route);
+// console.log('Esta es mi ruta ', route);
 // validar ruta absoluta o si no convertirla -- path.resolve()devolverá la ruta absoluta del directorio de trabajo actual.
 const validateRoute = path.resolve(route);
-console.log('Convertir en absoluta ', validateRoute);
+// console.log('Convertir en absoluta ', validateRoute);
 // console.log('Es relativa', validateRoute(path))
 
 const mdLinks = (path, options) => isDirectory(path)
@@ -22,14 +23,17 @@ const mdLinks = (path, options) => isDirectory(path)
     }
   })
   .then((arrayList) => {
-    console.log('archivo', fileMd(arrayList));
+    // console.log('archivo', fileMd(arrayList));
     return fileMd(arrayList);
   })
   .then(readfiles)
   .then((nestedObjects) => nestedObjects.flatMap((nestedObject) => nestedObject))
-  .then((linkObjects)=>{
-    if(options.validate){
-      return 'Option validate';
+  .then((linkObjects) => {
+    if (options.validate) {
+     // console.log('hola:', linkObjects);
+      return validateHttp(linkObjects);
+    }else{
+      return (linkObjects);
     }
   })
 
@@ -73,7 +77,7 @@ const readfiles = (routesMd) => {
 // usando marked extrayendo propiedades (href, texto, file) 
 
 const getLinks = (textfile, file) => {
-  console.log('mio', file);
+  // console.log('mio', file);
   let arrayLink = [];
   const renderer = new marked.Renderer();
   renderer.link = (href, _title, text) => {
@@ -87,9 +91,39 @@ const getLinks = (textfile, file) => {
   return arrayLink;
 }
 
-// Se recibe como option --Validate
-
-
-// md.js 'C:\Users\ESTEF\Documents\Laboratoria\BOG003-md-links\md.js'
+// Se recibe como option --Validate se agregar propiedades status y statusText al objeto 
+const validateHttp = (linkObjects) => {
+  return Promise.all(linkObjects.map(linkObject => {
+    // console.log('nuevo',linkObject);
+    return axios.get(linkObject.href)
+    .then (res=> {
+     return{
+       href: linkObject.href,
+       text: linkObject.text,
+       file: linkObject.file,
+       status: res.status,
+       ok: res.statusText,
+     }
+    })
+    .catch(error=> {
+     let errorStatus = '';
+     if (error.errno) {
+      errorStatus = 404;
+     }else{
+      errorStatus = error.response.status
+     }
+      // console.log('error:',error.errno);
+        return {
+        href:linkObject.href, 
+        text: linkObject.text, 
+        file: linkObject.file, 
+        status: errorStatus,
+        statusText: 'FAIL',
+      }
+    })
+  }))
+}
+  
+  // md.js 'C:\Users\ESTEF\Documents\Laboratoria\BOG003-md-links\md.js'
 
 module.exports = mdLinks
