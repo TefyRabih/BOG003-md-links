@@ -1,5 +1,6 @@
 #!/usr/bin/env node
- const mdLinks = require('./md.js');
+ const mdLinks = require('./mdLinks.js');
+ const calculateStats = require('./stats.js');
  const chalk = require('chalk');
  const figlet = require('figlet');
   
@@ -13,13 +14,33 @@
  console.log(chalk.magentaBright(figlet.textSync('MdLinks', { horizontalLayout: 'full' })));
  
  // Comprobar si recibe como option --validate 
- let isValidate = (optionsOne === '--validate') || (optionsOne === '--v') ? true : false;
- let isStats = (optionsTwo === '--stats') || (optionsTwo === '--s') ? true : false;
+ let isValidate = (optionsOne === '--validate') ? true : false;
+ let isStats = (optionsTwo === '--stats') || (optionsOne === '--stats') ? true : false;
 
-
+ 
 // md-links ./readme2.md --validate 
-mdLinks(route, {validate: isValidate, stats: isStats})
+mdLinks(route, {validate: isValidate})
+.then((res) => {
+ if (isStats) {
+   if (isValidate) {
+     // esto se ejecuta cuando especifiquen stats y validate
+     const stadistics = calculateStats(res);
+     console.log(stadistics);
+   }else{
+     // esto se ejecuta cuando especifiquen stats sin validate
+    const stadistics = calculateStats(res);
+    // quitar broken
+    console.log(stadistics);
+   }
+ }else{
+  if (isValidate) {
+    // esto se ejecuta cuando no especifique stats pero si validate
+  }else{
+    // esto se ejecuta cuando no se especifiquen ninguna
+    console.log(res);
+  }
+ }
+})
 
-.then((res) => console.log(res))
-.catch((err) => console.log(err))  
-  
+
+// .catch((err) => console.log(err))  
