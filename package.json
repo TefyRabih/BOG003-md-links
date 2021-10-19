@@ -1,4 +1,31 @@
 {
-  "name": "md-links",
-  "version": "0.1.0"
+  "name": "@tefyrabih/md-links",
+  "version": "0.1.0",
+  "description": "Herramienta que analiza archivos en formato markdown, permite verificar link encontrados e informar links dañados o rotos ademas permite realizar algunas estadisticas",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TefyRabih/BOG003-md-links.git"
+  },
+  "author": "Estefania Rabih",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TefyRabih/BOG003-md-links/issues"
+  },
+  "bin": {
+    "md-links": "index.js"
+  },
+  "dependencies": {
+    "axios": "^0.22.0",
+    "chalk": "^4.1.2",
+    "figlet": "^1.5.2",
+    "filehound": "^1.17.5",
+    "marked": "^0.3.14"
+  }
 }
