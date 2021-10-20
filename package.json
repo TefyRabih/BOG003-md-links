@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,10 @@
     "chalk": "^4.1.2",
     "figlet": "^1.5.2",
     "filehound": "^1.17.5",
+    "inquirer": "^8.2.0",
     "marked": "^0.3.14"
+  },
+  "devDependencies": {
+    "jest": "^27.3.1"
   }
 }

@@ -1,5 +1,5 @@
  const calculateStats = (linkObject) => {
-    let arrayLinks = []
+    let arrayLinks = [];
     linkObject.forEach(e =>arrayLinks.push(e.href));
     const totalLinks = arrayLinks.length;
     const uniqueLinks = new Set(arrayLinks);
@@ -10,9 +10,10 @@
      brokenLinks++
     })
     return {
-      totalLinks,
-      brokenLinks,
-      unique,
+    totalLinks,
+    brokenLinks,
+    unique,
     }
-  }
+}
+
   module.exports = calculateStats

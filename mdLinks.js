@@ -36,6 +36,8 @@ const mdLinks = (path, options) => isDirectory(path)
       return (linkObjects);
     }
   })
+  .catch((err) => console.log(err))
+
 
 // rutas de los archivos del directorio
 const readDir = (path) => FileHound.create().paths(path).find();
